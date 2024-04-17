@@ -26,7 +26,7 @@
                             <label for="" class="form-label">Cliente</label>
                             <select id=selectClient class="form-select form-select-lg">
                                 <option selected value="0">Seleccione una opcion</option>
-                                <option th:each="cliente:${cliente}" th:value="${cliente.id}" 
+                                <option th:each="cliente:${cliente}" th:value="${cliente.id}"
                                     th:text="${cliente.nombre + ' ' + cliente.apellido}">
                                 </option>
                             </select>
@@ -75,7 +75,7 @@
                             </li>
                             <a id="detalleOrdenLink" onclick="enviarValor()" class="btn btn-dark">Ver Orden</a>
                         </ul>
-                        
+
                     </div>
 
 
@@ -86,22 +86,24 @@
     <script>
         function enviarValor() {
             var valor = document.getElementById('selectClient').value;
-            if (valor != 0 ) {
-            var detalleOrdenLink = document.getElementById("detalleOrdenLink");
-            console.log( "/detalleorden/" + valor);
-            detalleOrdenLink.href = "/detalleorden/" + valor;
+            if (valor != 0) {
+                var detalleOrdenLink = document.getElementById("detalleOrdenLink");
+                console.log("/detalleorden/" + valor);
+                detalleOrdenLink.href = "/detalleorden/" + valor;
+            }else{
+                window.alert('Seleccione el cliente a facturar')
             }
         }
 
 
-        document.getElementById("selectClient").addEventListener("change", function() {
+        document.getElementById("selectClient").addEventListener("change", function () {
             var selectedOption = this.options[this.selectedIndex];
             var selectedUserId = selectedOption.value;
             var selectedUserName = selectedOption.textContent;
-            
+
             console.log("Selected User ID: " + selectedUserId);
             console.log("Selected User Name: " + selectedUserName);
-            
+
         });
     </script>
     <footer>

@@ -17,28 +17,12 @@ public class CarritoDaoImp implements ICarritoDao {
     @PersistenceContext
     private EntityManager pm;
 
+    @SuppressWarnings("unchecked")
     @Override
     @Transactional(readOnly = true)
-    public factura findAll(long idCliente) {
-        Encabezado encabezado = pm.createQuery("SELECT e FROM Encabezado e WHERE e.idCliente = :Cliente and e.estado = :Estado", Encabezado.class)
-                       .setParameter("Cliente", idCliente)
-                       .setParameter("Estado", false)
-                       .getSingleResult();
-        List<Detalles> detalles = pm.createQuery("SELECT d FROM Detalles d WHERE d.idEncabezado = :encabezadoId", Detalles.class)
-                                   .setParameter("encabezadoId", encabezado.getId())
-                                   .getResultList();
-
-        List<Producto> productos = pm.createQuery("SELECT p FROM Producto p", Producto.class)
-                                   .getResultList();
-
-        for (Detalles detalle : detalles) {
-            for (Producto producto : productos) {
-                if (detalle.getIdProducto() == producto.getId()) {
-                    detalle.setProducto(producto);
-                }
-            }
-        }
-        return new factura(encabezado, detalles);
+    public List<factura> findAll() {
+        return pm.createQuery("SELECT detalles.*, encabezado.* FROM detalles JOIN encabezado ON encabezado.id = detalles.id_encabezado")
+        .getResultList();
     }
 
     @Override
@@ -89,9 +73,9 @@ public class CarritoDaoImp implements ICarritoDao {
             detalles.setValor(producto.getValorUni() * detalles.getCantidad());
             pm.merge(detalles);
         } else {
-            if  (encabezado.getDescuento() > 0) {
-                detalles.setDescuento(producto.getValorUni() - (producto.getValorUni() * encabezado.getDescuentoTotal())/100);
-            }
+            // if  (encabezado.getDescuento() > 0) {
+            //     detalles.setDescuento(producto.getValorUni() - (producto.getValorUni() * encabezado.getDescuentoTotal())/100);
+            // }
             detalles.setIdProducto(carrito.getIdProducto());
             detalles.setCantidad(carrito.getCantidad());
             detalles.setIdEncabezado(encabezado.getId());
@@ -105,7 +89,7 @@ public class CarritoDaoImp implements ICarritoDao {
     @Transactional
     public void descuento(int descuento, long idEncabezado) {
         Encabezado encabezado = pm.find(Encabezado.class, idEncabezado);
-        encabezado.setDescuento(descuento);
+        // encabezado.setDescuento(descuento);
 
         List<Detalles> detalleCompra = pm.createQuery("SELECT d FROM Detalles d WHERE d.idEncabezado = :idEncabezado", Detalles.class)
                         .setParameter("idEncabezado", encabezado.getId())
@@ -158,19 +142,19 @@ public class CarritoDaoImp implements ICarritoDao {
             double subtotal = 0;
             for(Detalles detalle : detalles){
                 // Actualizar valor según descuento
-                if (encabezado.getDescuento() > 0) {
-                    detalle.setDescuento((detalle.getValor() * encabezado.getDescuentoTotal()));
-                    pm.merge(detalle);
-                }
+                // if (encabezado.getDescuento() > 0) {
+                //     detalle.setDescuento((detalle.getValor() * encabezado.getDescuentoTotal()));
+                //     pm.merge(detalle);
+                // }
                 subtotal += detalle.getValor();
             }
             encabezado.setSubTotal(subtotal);
 
             // Actualizar descuento total
-            if (encabezado.getDescuento() > 0) {
-                encabezado.setDescuentoTotal((encabezado.getSubTotal() * encabezado.getDescuento()) / 100);
-                encabezado.setTotal(encabezado.getSubTotal() - encabezado.getDescuentoTotal());
-            }
+            // if (encabezado.getDescuento() > 0) {
+            //     encabezado.setDescuentoTotal((encabezado.getSubTotal() * encabezado.getDescuento()) / 100);
+            //     encabezado.setTotal(encabezado.getSubTotal() - encabezado.getDescuentoTotal());
+            // }
 
             pm.merge(encabezado);
         }

@@ -6,7 +6,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Entity;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.persistence.Column;
 
 @Entity
@@ -15,23 +14,21 @@ public class Detalles implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id")
     private long id;
-    // @NotEmpty
+
     @Column(name = "id_encabezado")
     private long idEncabezado;
-    // @NotEmpty
+
     @Column(name = "id_producto")
     private long idProducto;
-    // @NotEmpty
+
     @Column(name = "cantidad")
     private long cantidad;
-    // @NotEmpty
+
     @Column(name = "valor")
     private double valor;
+
     @Column(name = "descuento")
     private double descuento;
-
-    public Detalles() {
-    }
 
     public long getId() {
         return id;
