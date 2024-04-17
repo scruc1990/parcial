@@ -35,21 +35,23 @@
                             <thead>
                                 <tr>
                                     <th scope="col">Id</th>
-                                    <th scope="col">Nombre</th>
-                                    <th scope="col">Descripción</th>
+                                    <!-- <th scope="col">Nombre</th>
+                                    <th scope="col">Descripción</th> -->
                                     <th scope="col">Cantidad</th>
                                     <th scope="col">Valor</th>
+                                    <th scope="col">Descuento</th>
                                     <th scope="col"></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr th:each="dorden:${cart}">
-                                    <td th:text="${dorden.producto.id}"></td>
-                                    <td th:text="${dorden.producto.nombre}"></td>
-                                    <td th:text="${dorden.producto.descripcion}"></td>
+                                    <td th:text="${dorden.idProducto}"></td>
+                                    <!-- <td th:text="${dorden.nombre}"></td> -->
+                                    <!-- <td th:text="${dorden.producto.descripcion}"></td> -->
                                     <td th:text="${dorden.cantidad}"></td>
                                     <td th:text="${dorden.valor}"></td>
-                                    <td><a th:href="@{/delete/cart/{id}   (id=${dorden.producto.id}) }"
+                                    <td th:text="${dorden.descuento}"></td>
+                                    <td><a th:href="@{/delete/cart/{id}   (id=${dorden.idProducto}) }"
                                             class="btn btn-danger">Quitar</a></td>
                                 </tr>
                             </tbody>
@@ -57,16 +59,12 @@
                     </div>
 
                     <div class="col-lg-3">
-                        <h3 class="card-title">Descuento</h3>
+                        <h2 class="card-title">DESCUENTO TOTAL</h2>
+
                         <ul class="list-group">
-                            <form action="#" th:action="@{/descuento}">
-                                <li class="list-group-item">
-                                    <input id="descuento" type="text" class="list-group-item" style="width: 100%;"
-                                        th:value="${orden.encabezado.descuento}" name="descuento">
-                                </li>
-                                <button type="submit" class="btn btn-dark" style="width: 100%;">Validar
-                                    descuento</button>
-                            </form>
+                            <li class="list-group-item">
+                                <h5 th:text="${orden.encabezado.descuentoTotal}"></h5>
+                            </li>
                         </ul>
                         <br>
                         <h2 class="card-title">SUBTOTAL</h2>
@@ -77,6 +75,7 @@
                             </li>
                             <a id="detalleOrdenLink" onclick="enviarValor()" class="btn btn-dark">Ver Orden</a>
                         </ul>
+                        
                     </div>
 
 

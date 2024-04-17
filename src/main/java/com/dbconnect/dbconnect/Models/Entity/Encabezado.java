@@ -9,7 +9,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -40,12 +39,6 @@ public class Encabezado implements Serializable{
     @Column(name = "descuento_total")
     private double descuentoTotal;
 
-    @Column(name = "estado")
-    private boolean estado;
-
-    @Column(name = "descuento")
-    private int descuento;
-
     @PrePersist
     public void PrePersist(){
         fecha = new Date();
@@ -58,8 +51,6 @@ public class Encabezado implements Serializable{
         this.subTotal = 0;
         this.total = 0;
         this.descuentoTotal = 0;
-        this.estado = false;
-        this.descuento = 0;
     }
 
     public long getId() {
@@ -102,28 +93,12 @@ public class Encabezado implements Serializable{
         this.total = total;
     }
 
-    public int getDescuento() {
-        return descuento;
-    }
-
-    public void setDescuento(int descuento) {
-        this.descuento = descuento;
-    }
-
     public double getDescuentoTotal() {
         return descuentoTotal;
     }
 
     public void setDescuentoTotal(double descuentoTotal) {
         this.descuentoTotal = descuentoTotal;
-    }
-
-    public boolean getEstado() {
-        return estado;
-    }
-
-    public void setEstado(boolean estado) {
-        this.estado = estado;
     }
 
     private static final long serialVersionUID = 1L;

@@ -8,7 +8,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import com.dbconnect.dbconnect.Models.DAO.ICarritoDao;
 import com.dbconnect.dbconnect.Models.DAO.IClienteDao;
+import com.dbconnect.dbconnect.Models.DAO.IDetalleDao;
+import com.dbconnect.dbconnect.Models.DAO.IEncabezadoDao;
 import com.dbconnect.dbconnect.Models.DAO.IProductoDao;
 import com.dbconnect.dbconnect.Models.Entity.Carrito;
 import com.dbconnect.dbconnect.Models.Entity.Cliente;
@@ -24,8 +25,6 @@ import com.dbconnect.dbconnect.Models.Entity.Encabezado;
 import com.dbconnect.dbconnect.Models.Entity.Producto;
 import com.dbconnect.dbconnect.Models.Entity.factura;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestBody;
-
 
 @Controller
 public class CarritoController {
@@ -36,6 +35,10 @@ public class CarritoController {
     private IProductoDao IProductoDao;
     @Autowired
     private ICarritoDao ICarritoDao;
+    @Autowired
+    private IEncabezadoDao IEncabezadoDao;
+    @Autowired
+    private IDetalleDao IDetalleDao;
 
     public String cliente;
 
@@ -94,15 +97,13 @@ public class CarritoController {
     @GetMapping({ "/descuento" })
     public String validateDiscount(
             @RequestParam(name = "descuento", required = false, defaultValue = "0") int descuento, Model model) {
-        System.out.println("descuento: " + descuento + " " );
-        encabezado.setDescuento(descuento);
+        System.out.println("descuento: " + descuento + " ");
         detalles.stream().forEach(dt -> dt.setDescuento(dt.getValor() * descuento / 100));
-        
+
         factura.setDetalle(detalles);
 
-        
         encabezado.setSubTotal(detalles.stream().mapToDouble(dt -> dt.getValor()).sum());
-        encabezado.setTotal(detalles.stream().mapToDouble(dt -> dt.getValor()-dt.getDescuento()).sum());
+        encabezado.setTotal(detalles.stream().mapToDouble(dt -> dt.getValor() - dt.getDescuento()).sum());
         factura.setEncabezado(encabezado);
         model.addAttribute("cart", detalles);
         model.addAttribute("orden", factura);
@@ -111,35 +112,44 @@ public class CarritoController {
     }
 
     @PostMapping("/cart")
-    public String addCart(@RequestParam Long id, @RequestParam Integer cantidad, Model model) {
+    public String addCart(@RequestParam Long id, @RequestParam Integer cantidad, @RequestParam Integer descuento,
+            Model model) {
         Detalles detalleOrden = new Detalles();
         Producto producto = new Producto();
 
         Optional<Producto> productoOptional = Optional.ofNullable(IProductoDao.findById(id));
         producto = productoOptional.get();
 
+        // Se agrega el detalle de los productos
+        detalleOrden.setIdProducto(id);
         detalleOrden.setCantidad(cantidad);
         detalleOrden.setValor(producto.getValorUni() * cantidad);
-
-        detalleOrden.setProducto(producto);
+        detalleOrden.setDescuento(descuento);
+        // detalleOrden.setProducto(producto);
 
         // validar que le producto no se añada 2 veces
         Long idProducto = producto.getId();
-        boolean ingresado = detalles.stream().anyMatch(p -> p.getProducto().getId() == idProducto);
+        boolean ingresado = detalles.stream().anyMatch(p -> p.getIdProducto() == idProducto);
 
         if (!ingresado) {
-            System.out.println(encabezado.getDescuento() + "descuento");
-            if (encabezado.getDescuento()>0) {
-                detalleOrden.setDescuento(detalleOrden.getValor() * encabezado.getDescuento() / 100);
-            }else {
-                detalleOrden.setDescuento(0);
-            }
+            // System.out.println(encabezado.getDescuento() + "descuento");
+            // if (encabezado.getDescuento()>0) {
+            // detalleOrden.setDescuento(detalleOrden.getValor() * encabezado.getDescuento()
+            // / 100);
+            // }else {
+            // detalleOrden.setDescuento(0);
+            // }
 
             detalles.add(detalleOrden);
         }
 
+        // Se agrega el encabezado
+        Date fechaCreacion = new Date();
+        encabezado.setFecha(fechaCreacion);
+
         encabezado.setSubTotal(detalles.stream().mapToDouble(dt -> dt.getValor()).sum());
-        encabezado.setTotal(detalles.stream().mapToDouble(dt -> dt.getValor()-dt.getDescuento()).sum());
+        encabezado.setDescuentoTotal(detalles.stream().mapToDouble(dt -> dt.getDescuento()).sum());
+        encabezado.setTotal(detalles.stream().mapToDouble(dt -> dt.getValor() - dt.getDescuento()).sum());
         factura.setDetalle(detalles);
         factura.setEncabezado(encabezado);
         model.addAttribute("cliente", IClienteDao.findAll());
@@ -156,7 +166,7 @@ public class CarritoController {
         List<Detalles> ordenesNueva = new ArrayList<Detalles>();
 
         for (Detalles detalleOrden : detalles) {
-            if (detalleOrden.getProducto().getId() != id) {
+            if (detalleOrden.getIdProducto() != id) {
                 ordenesNueva.add(detalleOrden);
             }
         }
@@ -165,7 +175,8 @@ public class CarritoController {
         detalles = ordenesNueva;
 
         encabezado.setSubTotal(detalles.stream().mapToDouble(dt -> dt.getValor()).sum());
-        encabezado.setTotal(detalles.stream().mapToDouble(dt -> dt.getValor()-dt.getDescuento()).sum());
+        encabezado.setDescuentoTotal(detalles.stream().mapToDouble(dt -> dt.getDescuento()).sum());
+        encabezado.setTotal(detalles.stream().mapToDouble(dt -> dt.getValor() - dt.getDescuento()).sum());
         factura.setDetalle(detalles);
         model.addAttribute("cart", detalles);
         model.addAttribute("orden", factura);
@@ -180,6 +191,8 @@ public class CarritoController {
         model.addAttribute("orden", factura);
         model.addAttribute("cliente", IClienteDao.findById(id));
 
+        encabezado.setIdCliente(id);
+
         return "carrito/detalleorden";
     }
 
@@ -187,9 +200,9 @@ public class CarritoController {
     public String getCart(Model model) {
 
         model.addAttribute("cart", detalles);
-        if (factura.getEncabezado() == null){
+        if (factura.getEncabezado() == null) {
             factura.setEncabezado(new Encabezado());
-            factura.getEncabezado().setSubTotal((long)0);
+            factura.getEncabezado().setSubTotal((long) 0);
         }
         model.addAttribute("orden", factura);
         model.addAttribute("cliente", IClienteDao.findAll());
@@ -198,15 +211,33 @@ public class CarritoController {
         return "carrito/carrito";
     }
 
-    @PostMapping("/carrito/guardaCarrito")
-    public String postMethodName(@ModelAttribute("carrito") Carrito carrito) {
-        System.out.println(carrito.getIdCliente());
-        // ICarritoDao.add(carrito);
-        // this.cliente = String.valueOf(carrito.getIdCliente());
-        // return "redirect:/carrito/listar/" + carrito.getIdCliente() + "";
-        
-        return "home";
+    @GetMapping("/detalleorden/saveOrder")
+    public String saveOrder() {
+
+        // orden.setNumero(ordenService.generarNumeroOrden());
+        encabezado = IEncabezadoDao.saveEncabezado(encabezado);
+        // detalleOrden.setIdEncabezado(encabezado.getId());
+
+        for (Detalles dt : detalles) {
+            dt.setIdEncabezado(encabezado.getId());
+            System.out.println(dt.getIdProducto());
+            IDetalleDao.saveDetalle(dt);
+        }
+
+        // ICarritoDao.Save(encabezado, true);
+        // ordenService.save(orden);
+
+        // //guardar detalles
+        // for (DetalleOrden dt:detalles) {
+        // dt.setOrden(orden);
+        // detalleOrdenService.save(dt);
+        // }
+
+        // ///limpiar lista y orden
+        // orden = new Orden();
+        // detalles.clear();
+
+        return "redirect:/";
     }
-    
 
 }

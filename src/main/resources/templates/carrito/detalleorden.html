@@ -50,16 +50,16 @@
                                 <table class="table">
                                     <thead>
                                         <tr>
-                                            <th scope="col">Producto</th>
-                                            <th scope="col">Precio</th>
+                                            <!-- <th scope="col">Producto</th>
+                                            <th scope="col">Precio</th> -->
                                             <th scope="col">Cantidad</th>
                                             <th scope="col">Total</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr th:each="dtorden:${cart}">
-                                            <td th:text="${dtorden.producto.nombre}"></td>
-                                            <td th:text="${dtorden.producto.valorUni}"></td>
+                                            <!-- <td th:text="${dtorden.producto.nombre}"></td>
+                                            <td th:text="${dtorden.producto.valorUni}"></td> -->
                                             <td th:text="${dtorden.cantidad}"></td>
                                             <td th:text="${dtorden.valor}"></td>
 
@@ -74,11 +74,27 @@
 
                     <div class="col-lg-3">
                         <h2 class="card-title">Resumen Orden</h2>
-
+                        <br><br>
+                        <h4 class="card-title">SubTotal</h4>
                         <ul class="list-group">
                             <li class="list-group-item">
-                               <!--  <h5 th:text=" 'Total: '+ ${orden.encabezado.total} "> </h5> -->
+                                <h5 th:text=" 'Total: '+ ${orden.encabezado.subTotal} "> </h5>
                             </li>
+                        </ul>
+                        <br>
+                        <h4 class="card-title">Descuento Total</h4>
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <h5 th:text=" 'Total: '+ ${orden.encabezado.descuentoTotal} "> </h5>
+                            </li>
+                        </ul>
+                        <br>
+                        <h4 class="card-title">Total</h4>
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <h5 th:text=" 'Total: '+ ${orden.encabezado.total} "> </h5>
+                            </li>
+                            <br>
                             <a th:href="@{saveOrder}" class="btn btn-dark">Generar</a>
                         </ul>
                     </div>
