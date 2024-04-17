@@ -38,18 +38,20 @@ public class CarritoController {
     public String cliente;
 
     List<Detalles> detalles = new ArrayList<Detalles>();
+    List<Producto> productos = new ArrayList<Producto>();
     List<Object> productoList = new ArrayList<>();
 
     factura factura = new factura();
     Encabezado encabezado = new Encabezado();
     Detalles detalleOrden = new Detalles();
     Cliente clienteOrden = new Cliente();
+    Producto productosProducto = new Producto();
+    Producto producto = new Producto();
 
     @PostMapping("/cart")
     public String addCart(@RequestParam Long id, @RequestParam Integer cantidad, @RequestParam Integer descuento,
             Model model) {
         Detalles detalleOrden = new Detalles();
-        Producto producto = new Producto();
 
         Optional<Producto> productoOptional = Optional.ofNullable(IProductoDao.findById(id));
         producto = productoOptional.get();
@@ -59,7 +61,7 @@ public class CarritoController {
         detalleOrden.setCantidad(cantidad);
         detalleOrden.setValor(producto.getValorUni() * cantidad);
         detalleOrden.setDescuento(descuento);
-        productoList.add(producto);
+
         // detalleOrden.setProducto(producto);
 
         // validar que le producto no se añada 2 veces
@@ -67,8 +69,8 @@ public class CarritoController {
         boolean ingresado = detalles.stream().anyMatch(p -> p.getIdProducto() == idProducto);
 
         if (!ingresado) {
-
             detalles.add(detalleOrden);
+            
         }
 
         // Se agrega el encabezado
@@ -90,7 +92,6 @@ public class CarritoController {
 
     @GetMapping("/delete/cart/{id}")
     public String deleteProductoCart(@PathVariable Long id, Model model) {
-
         // lista nueva de prodcutos
         List<Detalles> ordenesNueva = new ArrayList<Detalles>();
 
@@ -150,6 +151,8 @@ public class CarritoController {
         for (Detalles dt : detalles) {
             dt.setIdEncabezado(encabezado.getId());
             IDetalleDao.saveDetalle(dt);
+            producto.setStock(producto.getStock() - dt.getCantidad());
+            IProductoDao.edit(producto);
         }
 
         // ///limpiar carrito para nueva compra
