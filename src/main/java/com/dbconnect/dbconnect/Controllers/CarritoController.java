@@ -93,43 +93,55 @@ public class CarritoController {
 
     @GetMapping({ "/descuento" })
     public String validateDiscount(
-            @RequestParam(name = "descuento", required = false, defaultValue = "0") int descuento,
-            @RequestParam(name = "idEncabezado", required = false, defaultValue = "0") Long idEncabezado,
-            @RequestParam(name = "idCliente", required = false, defaultValue = "0") Long idCliente) {
-        System.out.println("descuento: " + descuento + " " + idEncabezado);
-        ICarritoDao.descuento(descuento, idEncabezado);
-        return "redirect:/carrito/listar/" + idCliente + "";
+            @RequestParam(name = "descuento", required = false, defaultValue = "0") int descuento, Model model) {
+        System.out.println("descuento: " + descuento + " " );
+        encabezado.setDescuento(descuento);
+        detalles.stream().forEach(dt -> dt.setDescuento(dt.getValor() * descuento / 100));
+        
+        factura.setDetalle(detalles);
+
+        
+        encabezado.setSubTotal(detalles.stream().mapToDouble(dt -> dt.getValor()).sum());
+        encabezado.setTotal(detalles.stream().mapToDouble(dt -> dt.getValor()-dt.getDescuento()).sum());
+        factura.setEncabezado(encabezado);
+        model.addAttribute("cart", detalles);
+        model.addAttribute("orden", factura);
+        model.addAttribute("cliente", IClienteDao.findAll());
+        return "carrito/carrito";
     }
 
     @PostMapping("/cart")
     public String addCart(@RequestParam Long id, @RequestParam Integer cantidad, Model model) {
         Detalles detalleOrden = new Detalles();
-        Encabezado encabezado = new Encabezado();
         Producto producto = new Producto();
-        double sumaTotal = 0;
 
         Optional<Producto> productoOptional = Optional.ofNullable(IProductoDao.findById(id));
         producto = productoOptional.get();
 
         detalleOrden.setCantidad(cantidad);
         detalleOrden.setValor(producto.getValorUni() * cantidad);
-        encabezado.setTotal(producto.getValorUni() * cantidad);
-        detalleOrden.setProducto(producto);
 
-        factura.setEncabezado(encabezado);
-        factura.setDetalle(detalles);
+        detalleOrden.setProducto(producto);
 
         // validar que le producto no se añada 2 veces
         Long idProducto = producto.getId();
         boolean ingresado = detalles.stream().anyMatch(p -> p.getProducto().getId() == idProducto);
 
         if (!ingresado) {
+            System.out.println(encabezado.getDescuento() + "descuento");
+            if (encabezado.getDescuento()>0) {
+                detalleOrden.setDescuento(detalleOrden.getValor() * encabezado.getDescuento() / 100);
+            }else {
+                detalleOrden.setDescuento(0);
+            }
+
             detalles.add(detalleOrden);
         }
 
-        sumaTotal = detalles.stream().mapToDouble(dt -> dt.getValor()).sum();
-
-        encabezado.setTotal(sumaTotal);
+        encabezado.setSubTotal(detalles.stream().mapToDouble(dt -> dt.getValor()).sum());
+        encabezado.setTotal(detalles.stream().mapToDouble(dt -> dt.getValor()-dt.getDescuento()).sum());
+        factura.setDetalle(detalles);
+        factura.setEncabezado(encabezado);
         model.addAttribute("cliente", IClienteDao.findAll());
         model.addAttribute("cart", detalles);
         model.addAttribute("orden", factura);
@@ -152,12 +164,12 @@ public class CarritoController {
         // poner la nueva lista con los productos restantes
         detalles = ordenesNueva;
 
-        double sumaTotal = 0;
-        sumaTotal = detalles.stream().mapToDouble(dt -> dt.getValor()).sum();
-
-        encabezado.setTotal(sumaTotal);
+        encabezado.setSubTotal(detalles.stream().mapToDouble(dt -> dt.getValor()).sum());
+        encabezado.setTotal(detalles.stream().mapToDouble(dt -> dt.getValor()-dt.getDescuento()).sum());
+        factura.setDetalle(detalles);
         model.addAttribute("cart", detalles);
         model.addAttribute("orden", factura);
+        model.addAttribute("cliente", IClienteDao.findAll());
 
         return "carrito/carrito";
     }
@@ -175,6 +187,10 @@ public class CarritoController {
     public String getCart(Model model) {
 
         model.addAttribute("cart", detalles);
+        if (factura.getEncabezado() == null){
+            factura.setEncabezado(new Encabezado());
+            factura.getEncabezado().setSubTotal((long)0);
+        }
         model.addAttribute("orden", factura);
         model.addAttribute("cliente", IClienteDao.findAll());
         model.addAttribute("selectClient", new Cliente());
