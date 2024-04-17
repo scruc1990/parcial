@@ -1,0 +1,123 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<head>
+    <title>Title</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+    <!-- Bootstrap CSS v5.2.1 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+
+    <link th:href="@{/styles/main.css}" rel="stylesheet" />
+</head>
+
+<body>
+    <header th:replace="~{fragments/header :: navigation}"></header>
+    <main>
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-9">
+                        <!-- <form action="" th:action="@{/carrito/form}" th:object="${carrito}" method="post"> -->
+                        <div class="mb-3">
+                            <label for="" class="form-label">Cliente</label>
+                            <select id=selectClient class="form-select form-select-lg">
+                                <option selected value="0">Seleccione una opcion</option>
+                                <option th:each="cliente:${cliente}" th:value="${cliente.id}" 
+                                    th:text="${cliente.nombre + ' ' + cliente.apellido}">
+                                </option>
+                            </select>
+                        </div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Id</th>
+                                    <th scope="col">Nombre</th>
+                                    <th scope="col">Descripción</th>
+                                    <th scope="col">Cantidad</th>
+                                    <th scope="col">Valor</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="dorden:${cart}">
+                                    <td th:text="${dorden.producto.id}"></td>
+                                    <td th:text="${dorden.producto.nombre}"></td>
+                                    <td th:text="${dorden.producto.descripcion}"></td>
+                                    <td th:text="${dorden.cantidad}"></td>
+                                    <td th:text="${dorden.valor}"></td>
+                                    <td><a th:href="@{/delete/cart/{id}   (id=${dorden.producto.id}) }"
+                                            class="btn btn-danger">Quitar</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="col-lg-3">
+                        <h3 class="card-title">Descuento</h3>
+                        <ul class="list-group">
+                            <!-- <form action="#" th:action="@{/descuento}">
+                                <li class="list-group-item">
+                                    <input id="descuento" type="text" class="list-group-item"
+                                        th:value="${orden.encabezado.descuento}" name="descuento">
+                                </li>
+                                <button type="submit" class="btn btn-dark" style="width: 297.6px;">Validar
+                                    descuento</button>
+                            </form> -->
+                        </ul>
+                        <br>
+                        <h2 class="card-title">SUBTOTAL</h2>
+
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <h5 th:text="${orden.encabezado.total}"></h5>
+                            </li>
+                            <a id="detalleOrdenLink" onclick="enviarValor()" class="btn btn-dark">Ver Orden</a>
+                        </ul>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+        function enviarValor() {
+            var valor = document.getElementById('selectClient').value;
+            if (valor != 0 ) {
+            var detalleOrdenLink = document.getElementById("detalleOrdenLink");
+            console.log( "/detalleorden/" + valor);
+            detalleOrdenLink.href = "/detalleorden/" + valor;
+            }
+        }
+
+
+        document.getElementById("selectClient").addEventListener("change", function() {
+            var selectedOption = this.options[this.selectedIndex];
+            var selectedUserId = selectedOption.value;
+            var selectedUserName = selectedOption.textContent;
+            
+            console.log("Selected User ID: " + selectedUserId);
+            console.log("Selected User Name: " + selectedUserName);
+            
+        });
+    </script>
+    <footer>
+        <!-- place footer here -->
+    </footer>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <!-- Bootstrap JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+        integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
