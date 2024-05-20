@@ -15,7 +15,6 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
 
 @Entity
 public class Cliente implements Serializable {
@@ -42,6 +41,18 @@ public class Cliente implements Serializable {
     @DateTimeFormat(pattern =  "yyyy-mm-dd")
     @Temporal(TemporalType.DATE)
     private Date CreateAt;
+
+    @Column(name = "Password")
+    @NotEmpty(message = "El campo no puede estar en vacio")
+    private String Password;
+
+    @Column(name = "Role")
+    @NotEmpty(message = "El campo no puede estar en vacio")
+    private String Role;
+
+    @Column(name = "Enabled")
+    @NotEmpty(message = "El campo no puede estar en vacio")
+    private Boolean Enabled;
 
     @PrePersist
     public void PrePersist(){
@@ -90,6 +101,30 @@ public class Cliente implements Serializable {
 
     public static long getSerialversionuid() {
         return serialVersionUID;
+    }
+
+    public String getPassword() {
+        return Password;
+    }
+
+    public void setPassword(String password) {
+        Password = password;
+    }
+
+    public String getRole() {
+        return Role;
+    }
+
+    public void setRole(String role) {
+        Role = role;
+    }
+
+    public Boolean getEnabled() {
+        return Enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        Enabled = enabled;
     }
 
     private static final long serialVersionUID = 1L;

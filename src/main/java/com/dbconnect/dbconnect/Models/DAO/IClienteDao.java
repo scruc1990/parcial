@@ -15,5 +15,7 @@ public interface IClienteDao {
     public void delete(Long idLong);
 
     public void edit(Cliente cliente);
+
+    public Cliente findByEmail(String email);
     
 }
