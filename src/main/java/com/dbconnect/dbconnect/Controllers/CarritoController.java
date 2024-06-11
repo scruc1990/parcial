@@ -21,6 +21,9 @@ import com.dbconnect.dbconnect.Models.Entity.Detalles;
 import com.dbconnect.dbconnect.Models.Entity.Encabezado;
 import com.dbconnect.dbconnect.Models.Entity.Producto;
 import com.dbconnect.dbconnect.Models.Entity.factura;
+
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
@@ -50,7 +53,10 @@ public class CarritoController {
 
     @PostMapping("/cart")
     public String addCart(@RequestParam Long id, @RequestParam Integer cantidad, @RequestParam Integer descuento,
-            Model model) {
+            Model model, HttpSession session) {
+        model.addAttribute("fullname", session.getAttribute("nombre") + " " + session.getAttribute("apellido"));
+        model.addAttribute("rol", session.getAttribute("rol"));
+        model.addAttribute("idusuario", session.getAttribute("idusuario"));
         Detalles detalleOrden = new Detalles();
 
         Optional<Producto> productoOptional = Optional.ofNullable(IProductoDao.findById(id));
@@ -70,7 +76,7 @@ public class CarritoController {
 
         if (!ingresado) {
             detalles.add(detalleOrden);
-            
+
         }
 
         // Se agrega el encabezado
@@ -91,7 +97,9 @@ public class CarritoController {
     }
 
     @GetMapping("/delete/cart/{id}")
-    public String deleteProductoCart(@PathVariable Long id, Model model) {
+    public String deleteProductoCart(@PathVariable Long id, Model model, HttpSession session) {
+        model.addAttribute("fullname", session.getAttribute("nombre") + " " + session.getAttribute("apellido"));
+        model.addAttribute("rol", session.getAttribute("rol"));
         // lista nueva de prodcutos
         List<Detalles> ordenesNueva = new ArrayList<Detalles>();
 
@@ -117,7 +125,9 @@ public class CarritoController {
     }
 
     @GetMapping("/detalleorden/{id}")
-    public String order(Model model, @PathVariable long id) {
+    public String order(Model model, @PathVariable long id, HttpSession session) {
+        model.addAttribute("fullname", session.getAttribute("nombre") + " " + session.getAttribute("apellido"));
+        model.addAttribute("rol", session.getAttribute("rol"));
         model.addAttribute("cart", detalles);
         model.addAttribute("orden", factura);
         model.addAttribute("cliente", IClienteDao.findById(id));
@@ -128,7 +138,12 @@ public class CarritoController {
     }
 
     @GetMapping("/getCart")
-    public String getCart(Model model) {
+    public String getCart(Model model, HttpSession session) {
+        if (session.getAttribute("login").equals(false)) {
+            return "redirect:/";
+        }
+        model.addAttribute("fullname", session.getAttribute("nombre") + " " + session.getAttribute("apellido"));
+        model.addAttribute("rol", session.getAttribute("rol"));
 
         model.addAttribute("cart", detalles);
         if (factura.getEncabezado() == null) {
@@ -162,7 +177,7 @@ public class CarritoController {
         clienteOrden = new Cliente();
         detalles.clear();
 
-        return "redirect:/";
+        return "redirect:/home";
     }
 
 }

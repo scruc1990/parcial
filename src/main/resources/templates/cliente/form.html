@@ -10,6 +10,7 @@
     <!-- Bootstrap CSS v5.2.1 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+    <link href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css' rel='stylesheet'>
 
     <link th:href="@{/styles/main.css}" rel="stylesheet" />
 </head>
@@ -41,6 +42,21 @@
                         placeholder="" />
                     <label for="email">Email</label>
                     <p th:if="${#fields.hasErrors('Email')}" th:errorclass="error" th:errors="*{Email}" />
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control" th:field="*{password}" name="password" id="password"
+                        placeholder="" />
+                    <label for="password">Contraseña</label>
+                    <p th:if="${#fields.hasErrors('Password')}" th:errorclass="error" th:errors="*{Password}" />
+                </div>
+                <div class="form mb-3">
+                    <select id=selectClient class="form-select form-select-lg" th:field="*{role}">
+                        <option selected value="0">Seleccione un rol</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Admin Clientes">Admin Clientes</option>
+                        <option value="Admin Productos">Admin Productos</option>
+                        <option value="Cliente">Cliente</option>
+                    </select>
                 </div>
 
                 <button type="submit" class="btn btn-primary">Guardar</button>

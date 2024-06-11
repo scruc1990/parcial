@@ -19,36 +19,40 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/}">Inicio</a>
+                        <a class="nav-link" th:href="@{/home}">Inicio</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/getCart}">Carrito</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/cliente/listar}">Clientes</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/producto/listar}">Productos</a>
-                    </li>
+                    <div th:if="${rol == 'Admin' || rol == 'Admin Clientes'}">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/cliente/listar}">Clientes</a>
+                        </li>
+                    </div>
+                    <div th:if="${rol == 'Admin' || rol == 'Admin Productos'}">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/producto/listar}">Productos</a>
+                        </li>
+                    </div>
+
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/facturas/listar}">Facturas</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav d-flex flex-row">
-                    <li class="nav-item me-3 me-lg-0">
-                        <a class="nav-link" href="#!">
-                            <i class="fas fa-shopping-cart"></i>
+                    <li class="nav-item me-3 me-lg-0 dropdown">
+                        <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            <i class="bi bi-person-circle" style="color: black;" th:text="${fullname}"></i>
                         </a>
-                    </li>
-                    <li class="nav-item me-3 me-lg-0">
-                        <a class="nav-link" href="#!">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                    </li>
-                    <li class="nav-item me-3 me-lg-0">
-                        <a class="nav-link" href="#!">
-                            <i class="fab fa-instagram"></i>
-                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item btn" data-bs-toggle="modal" data-bs-target="#user_info_modal"
+                                    th:text="${rol}"></a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item btn" th:href="@{/auth/logout}">Cerrar Sesión</a></li>
+                        </ul>
                     </li>
                 </ul>
             </div>

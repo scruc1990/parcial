@@ -47,11 +47,10 @@ public class Cliente implements Serializable {
     private String Password;
 
     @Column(name = "Role")
-    @NotEmpty(message = "El campo no puede estar en vacio")
+    // @NotEmpty(message = "El campo no puede estar en vacio")
     private String Role;
 
     @Column(name = "Enabled")
-    @NotEmpty(message = "El campo no puede estar en vacio")
     private Boolean Enabled;
 
     @PrePersist

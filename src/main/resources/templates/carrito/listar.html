@@ -10,6 +10,7 @@
     <!-- Bootstrap CSS v5.2.1 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+    <link href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css' rel='stylesheet'>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -21,13 +22,13 @@
         <div class="container">
             <h1 th:text="${title}"></h1>
             <br><br><br>
-        
+
             <form action="" th:action="@{/carrito/form}" th:object="${carrito}" method="post">
                 <div class="form-floating mb-3">
                     <div class="mb-3">
                         <label for="" class="form-label">Cliente</label>
                         <select class="form-select form-select-lg" th:field="*{idCliente}">
-                            <option th:each="cliente:${cliente}" th:value="${cliente.id}" 
+                            <option th:each="cliente:${cliente}" th:value="${cliente.id}"
                                 th:text="${cliente.nombre + ' ' + cliente.apellido}">
                             </option>
                         </select>
@@ -36,7 +37,7 @@
                     <div class="mb-3">
                         <label for="" class="form-label">Producto</label>
                         <select class="form-select form-select-lg" th:field="*{idProducto}">
-                            <option th:each="producto:${producto}" th:value="${producto.id}" 
+                            <option th:each="producto:${producto}" th:value="${producto.id}"
                                 th:text="${producto.nombre + '/' + producto.descripcion}">
                             </option>
                         </select>
@@ -55,7 +56,7 @@
 
             </form>
             <br>
-		<div class="card mb-4">
+            <div class="card mb-4">
                 <div class="card-body">
                     <div class="row">
                         <div class="col-lg-9">
@@ -76,7 +77,8 @@
                                         <td th:text="${factura.producto.descripcion}"></td>
                                         <td th:text="${factura.cantidad}"></td>
                                         <td th:text="${factura.valor}"></td>
-                                        <td><a th:href="@{'/factura/eliminar/' + ${factura.id}+ '/' +${encabezado.idCliente}}" class="btn btn-danger">Quitar</a></td>
+                                        <td><a th:href="@{'/factura/eliminar/' + ${factura.id}+ '/' +${encabezado.idCliente}}"
+                                                class="btn btn-danger">Quitar</a></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -84,22 +86,28 @@
 
                         <div class="col-lg-3">
                             <h3 class="card-title">Descuento</h3>
-                            <ul class="list-group" >
-                            <form action="#" th:action="@{/descuento}">
-                                <li class="list-group-item" >
-                                        <input hidden id="idEncabezado" type="text" class="list-group-item" th:value="${encabezado.id}" name="idEncabezado">
-                                        <input hidden id="idCliente" type="text" class="list-group-item" th:value="${encabezado.idCliente}" name="idCliente">
-                                        <input id="descuento" type="text" class="list-group-item" th:value="${encabezado.descuento}" name="descuento">
-                                    
-                                </li>
-                                <button type="submit" class="btn btn-dark" style="width: 297.6px;">Validar descuento</button>
-                            </form>
+                            <ul class="list-group">
+                                <form action="#" th:action="@{/descuento}">
+                                    <li class="list-group-item">
+                                        <input hidden id="idEncabezado" type="text" class="list-group-item"
+                                            th:value="${encabezado.id}" name="idEncabezado">
+                                        <input hidden id="idCliente" type="text" class="list-group-item"
+                                            th:value="${encabezado.idCliente}" name="idCliente">
+                                        <input id="descuento" type="text" class="list-group-item"
+                                            th:value="${encabezado.descuento}" name="descuento">
+
+                                    </li>
+                                    <button type="submit" class="btn btn-dark" style="width: 297.6px;">Validar
+                                        descuento</button>
+                                </form>
                             </ul>
                             <br>
                             <h2 class="card-title">SUBTOTAL</h2>
 
                             <ul class="list-group">
-                                <li class="list-group-item"><h5 th:text="${encabezado.subTotal}"></h5></li>
+                                <li class="list-group-item">
+                                    <h5 th:text="${encabezado.subTotal}"></h5>
+                                </li>
                                 <a th:href="@{/order}" class="btn btn-dark">Ver Orden</a>
                             </ul>
                         </div>

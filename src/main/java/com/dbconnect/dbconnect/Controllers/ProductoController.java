@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import com.dbconnect.dbconnect.Models.DAO.IProductoDao;
 import com.dbconnect.dbconnect.Models.Entity.Producto;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @Controller
@@ -22,14 +23,22 @@ public class ProductoController {
     private IProductoDao IProductoDao;
 
     @GetMapping("/producto/listar")
-    public String Listar(Model model) {
+    public String Listar(Model model, HttpSession session) {
+        if (session.getAttribute("login").equals(false)) {
+            return "redirect:/";
+        }
+        model.addAttribute("fullname", session.getAttribute("nombre") + " " + session.getAttribute("apellido"));
+        model.addAttribute("rol", session.getAttribute("rol"));
         model.addAttribute("title", "Listado de Productos");
         model.addAttribute("producto", IProductoDao.findAll());
         return "/producto/listar";
     }
 
     @GetMapping("/producto/form")
-    public String create(Model model) {
+    public String create(Model model, HttpSession session) {
+        if (session.getAttribute("login").equals(false)) {
+            return "redirect:/";
+        }
         Producto producto = new Producto();
         model.addAttribute("title", "Nuevo Producto");
         model.addAttribute("producto", producto);
@@ -37,8 +46,10 @@ public class ProductoController {
     }
 
     @PostMapping("/producto/form")
-    public String saveClient(@Valid Producto producto, BindingResult result, Model model) {
-
+    public String saveClient(@Valid Producto producto, BindingResult result, Model model, HttpSession session) {
+        if (session.getAttribute("login").equals(false)) {
+            return "redirect:/";
+        }
         if (result.hasErrors()) {
             model.addAttribute("title", "Nuevo producto");
             return "/producto/form";
@@ -78,7 +89,9 @@ public class ProductoController {
     }
 
     @GetMapping("/producto/detalleproducto/{id}")
-    public String productoHome(@PathVariable String id, Model model) {
+    public String productoHome(@PathVariable String id, Model model, HttpSession session) {
+        model.addAttribute("fullname", session.getAttribute("nombre") + " " + session.getAttribute("apellido"));
+        model.addAttribute("rol", session.getAttribute("rol"));
         Producto producto = new Producto();
         Optional<Producto> productoOptional = Optional.ofNullable(IProductoDao.findById(Long.parseLong(id)));
         producto = productoOptional.get();
