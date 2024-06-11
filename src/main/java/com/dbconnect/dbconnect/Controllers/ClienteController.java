@@ -63,7 +63,7 @@ public class ClienteController {
             return "/cliente/form";
         }
         IClienteDao.saveClient(cliente);
-        IEmailServices.sendEmail(cliente.getEmail(), "Prueba", "Usuario creado con exito");
+        // IEmailServices.sendEmail(cliente.getEmail(), "Prueba", "Usuario creado con exito");
 
         return "redirect:/cliente/listar";
     }
